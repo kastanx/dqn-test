@@ -59,7 +59,7 @@ export class Agent {
   };
 
   saveModel = async () => {
-    if (this.step % 1000000 === 0) {
+    if (this.step % 100000 === 0) {
       await this.trainModel.save('file://step' + this.step);
     }
   };
