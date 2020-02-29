@@ -54,11 +54,14 @@ export class Agent {
     });
 
     await this.trainModel.fit(tensor2d(x), tensor2d(y), { verbose: false });
-    if (this.epsilon < 0.4) {
-      await this.trainModel.save('file://epsilon40');
-      process.exit();
-    }
+    await this.saveModel();
     this.updateModel();
+  };
+
+  saveModel = async () => {
+    if (this.step % 1000000 === 0) {
+      await this.trainModel.save('file://step' + this.step);
+    }
   };
 
   predict = async (state: any): Promise<any> => {
