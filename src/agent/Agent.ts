@@ -16,6 +16,7 @@ export class Agent {
   public epsilonStrategy: boolean = true;
   public updateEvery: number = 10000;
   public toUpdate: number = 0;
+  public step: number = 0;
 
   constructor() {
     this.trainModel = Model.create();
@@ -24,7 +25,7 @@ export class Agent {
   }
 
   train = async () => {
-    const batch = this.buffer.sample(1000);
+    const batch = this.buffer.sample(64);
     const states: any = [];
     const nextStates: any = [];
     batch.forEach(element => {
@@ -61,7 +62,9 @@ export class Agent {
   };
 
   predict = async (state: any): Promise<any> => {
-    if (this.buffer.canTrain(1000)) {
+    console.log(this.step);
+    this.step++;
+    if (this.buffer.canTrain(64)) {
       await this.train();
     }
     this.epsilon = this.epsilon * this.epsilonDecay;
