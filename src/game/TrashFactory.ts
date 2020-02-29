@@ -1,9 +1,22 @@
-import { Obstacle } from './Obstacle';
 import { TakenSpots } from './TakenSpots';
 import { random } from 'lodash';
 import { Trash } from './Trash';
 
 export class TrashFactory {
+  public static createStatic = (context: any, takenSpots: TakenSpots): Trash[] => {
+    const positions = ['5,5', '5,6', '3,2', '3,6', '4,1'];
+    const trash: Trash[] = [];
+
+    positions.forEach((pos: string) => {
+      const [x, y] = pos.split(',');
+      takenSpots.add(pos);
+
+      trash.push(new Trash(1, 1, parseInt(x), parseInt(y), context, 'red'));
+    });
+
+    return trash;
+  };
+
   public static create(
     count: number,
     gameWidth: number,

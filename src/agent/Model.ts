@@ -8,18 +8,18 @@ export class Model {
   static create = (): Sequential => {
     const hidden1 = tf.layers.dense({
       inputShape: [64],
-      units: 16,
-      kernelInitializer: 'randomNormal'
+      activation: 'relu',
+      units: 256
     });
 
     const hidden2 = tf.layers.dense({
-      units: 16,
-      kernelInitializer: 'randomNormal'
+      units: 256,
+      activation: 'relu'
     });
 
     const hidden3 = tf.layers.dense({
-      units: 4,
-      kernelInitializer: 'randomNormal'
+      activation: 'linear',
+      units: 4
     });
 
     const model = tf.sequential();

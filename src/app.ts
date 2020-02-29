@@ -1,9 +1,26 @@
 import { Game } from './game/Game';
 import { Agent } from './agent/Agent';
+import { TrainedAgent } from './agent/TrainedAgent';
 
 const render = process.env.NODEJS === 'node' ? false : true;
-const agent = new Agent();
-const game = new Game('canvas', 8, 8, render);
+let agent: any;
+
+const start = async () => {
+  agent = new Agent();
+
+  while (true) {
+    const state = game.getState();
+    const action = await agent.predict(state);
+    const frame = game.step(action);
+    agent.buffer.append(frame);
+
+    if (gameTimeout !== 0) {
+      await new Promise((resolve, reject) => setTimeout(resolve, gameTimeout));
+    }
+  }
+};
+
+const game = new Game('canvas', 8, 8, render, true);
 
 game.endGameCallback = () => {
   agent.score = 0;
@@ -20,31 +37,11 @@ game.start();
 game.getState();
 game.createControls();
 
-const trainEvery = 1000;
-let step = 0;
 let gameTimeout = 0;
 
-const start = async () => {
-  while (true) {
-    const state = game.getState();
-    const action = agent.predict(state);
-    const frame = game.step(action);
-    agent.buffer.append(frame);
-
-    if (step > trainEvery) {
-      await agent.train();
-      step = 0;
-    }
-    step++;
-
-    if (gameTimeout !== 0) {
-      await new Promise((resolve, reject) => setTimeout(resolve, gameTimeout));
-    }
-  }
-};
 if (render) {
   const dump = () => {
-    document.getElementById('dump').textContent = 'TBD';
+    document.getElementById('dump').textContent = 'tbd';
   };
 
   document.getElementById('dumpbtn').onclick = dump;

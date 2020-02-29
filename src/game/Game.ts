@@ -24,14 +24,16 @@ export class Game {
   private collider: Collider;
   public endGameCallback?: CallableFunction;
   public successCallback?: CallableFunction;
+  public staticWorld: boolean;
   public state: any;
   public reward: number;
   public render: boolean;
 
-  constructor(canvasId: string, gameWidth: number, gameHeight: number, render: boolean) {
+  constructor(canvasId: string, gameWidth: number, gameHeight: number, render: boolean, staticWorld: boolean) {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     this.render = render;
+    this.staticWorld = staticWorld;
     if (this.render) {
       this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
       this.canvas.width = Px.scaleUp(gameWidth);
@@ -50,8 +52,15 @@ export class Game {
     this.reset();
     const takenSpots = new TakenSpots();
     this.fence = ObstacleFactory.generateFence(this.gameWidth, this.gameHeight, this.context, takenSpots);
-    this.obstacles = ObstacleFactory.create(5, this.gameWidth, this.gameHeight, this.context, takenSpots);
-    this.trash = TrashFactory.create(10, this.gameWidth, this.gameHeight, this.context, takenSpots);
+
+    if (this.staticWorld) {
+      this.obstacles = ObstacleFactory.createStatic(this.context, takenSpots);
+      this.trash = TrashFactory.createStatic(this.context, takenSpots);
+    } else {
+      this.obstacles = ObstacleFactory.create(5, this.gameWidth, this.gameHeight, this.context, takenSpots);
+      this.trash = TrashFactory.create(10, this.gameWidth, this.gameHeight, this.context, takenSpots);
+    }
+
     this.garbageMan = GarbageManFactory.create(1, this.gameWidth, this.gameHeight, this.context, takenSpots)[0];
 
     this.collider.add([this.garbageMan], this.obstacles.concat(this.fence), (o1: any, o2: any) => {

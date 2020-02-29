@@ -6,7 +6,9 @@
   "dependencies": {
     "@tensorflow/tfjs": "^1.5.2",
     "@tensorflow/tfjs-node": "^1.5.2",
+    "@types/fs-extra": "^8.1.0",
     "@types/node": "^13.7.2",
+    "fs-extra": "^8.1.0",
     "lodash": "^4.17.15",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",
@@ -14,7 +16,9 @@
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "train": "npx ts-node src/testing/training.ts",
+    "run": "NODEJS=node npx ts-node src/app.ts "
   },
   "author": "",
   "license": "ISC",

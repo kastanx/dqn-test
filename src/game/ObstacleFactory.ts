@@ -3,7 +3,27 @@ import { TakenSpots } from './TakenSpots';
 import { random } from 'lodash';
 
 export class ObstacleFactory {
-  public static create(count: number, gameWidth: number, gameHeight: number, context: any, takenSpots: TakenSpots) {
+  public static createStatic = (context: any, takenSpots: TakenSpots): Obstacle[] => {
+    const positions = ['1,5', '5,4', '6,4', '3,5', '4,6'];
+    const obstacles: Obstacle[] = [];
+
+    positions.forEach((pos: string) => {
+      const [x, y] = pos.split(',');
+      takenSpots.add(pos);
+
+      obstacles.push(new Obstacle(1, 1, parseInt(x), parseInt(y), context, 'black'));
+    });
+
+    return obstacles;
+  };
+
+  public static create(
+    count: number,
+    gameWidth: number,
+    gameHeight: number,
+    context: any,
+    takenSpots: TakenSpots
+  ): Obstacle[] {
     const obstacles: Obstacle[] = [];
     for (let i = 0; i < count; i++) {
       const position = ObstacleFactory.generateUnique(gameWidth, gameHeight, takenSpots);

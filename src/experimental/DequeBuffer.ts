@@ -1,4 +1,5 @@
 import { sampleSize } from 'lodash';
+import * as fs from 'fs-extra';
 
 export interface Frame {
   state: number[];
@@ -33,7 +34,11 @@ export class DequeBuffer {
     this.frames.push(frame);
   };
 
-  public sample = (): Frame[] => {
-    return sampleSize(this.frames, 64);
+  public sample = (batchSize: number): Frame[] => {
+    return sampleSize(this.frames, batchSize);
+  };
+
+  public canTrain = (batchSize: number): boolean => {
+    return this.frames.length > batchSize;
   };
 }
