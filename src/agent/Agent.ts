@@ -14,7 +14,7 @@ export class Agent {
   public epsilonDecay: number = 0.9999999;
   public score: number = 0;
   public epsilonStrategy: boolean = true;
-  public updateEvery: number = 10000;
+  public updateEvery: number = 1000;
   public toUpdate: number = 0;
   public step: number = 0;
 
@@ -59,7 +59,7 @@ export class Agent {
   };
 
   saveModel = async () => {
-    if (this.step % 100000 === 0) {
+    if (this.step % 10000 === 0) {
       await this.trainModel.save('file://step' + this.step);
     }
   };
