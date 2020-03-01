@@ -11,9 +11,9 @@ const verify2 = fs.readJSONSync('./src/testing/test.data.json');
 const buffer = new DequeBuffer(50000);
 buffer.frames = set;
 
-const DISCOUNT = 0.9999;
+const DISCOUNT = 0.999999;
 const train = async () => {
-  for (let k = 0; k < 300; k++) {
+  for (let k = 0; k < 1000; k++) {
     let dataset = buffer.sample(1000);
     const states: any = [];
     const nextStates: any = [];
