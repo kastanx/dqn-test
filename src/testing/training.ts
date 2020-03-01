@@ -1,49 +1,63 @@
 import { TestModel } from './TestModel';
 import * as fs from 'fs-extra';
-import { Frame } from '../experimental/DequeBuffer';
+import { Frame, DequeBuffer } from '../experimental/DequeBuffer';
 import * as tf from '@tensorflow/tfjs-node';
 import { Reward } from '../game/Reward';
 
 const model: any = TestModel.create();
-const dataset: Frame[] = fs.readJSONSync('./src/testing/state-dataset.json'); //.slice(0, 100000);
+const set: Frame[] = fs.readJSONSync('./src/testing/state-dataset.json'); //.slice(0, 100000);
 const verify: Frame = fs.readJSONSync('./src/testing/verify.json');
+const verify2 = fs.readJSONSync('./src/testing/test.data.json');
+const buffer = new DequeBuffer(50000);
+buffer.frames = set;
 
-const DISCOUNT = 1;
+const DISCOUNT = 0.9999;
 const train = async () => {
-  const states: any = [];
-  const nextStates: any = [];
+  for (let k = 0; k < 300; k++) {
+    let dataset = buffer.sample(1000);
+    const states: any = [];
+    const nextStates: any = [];
 
-  dataset.forEach(element => {
-    states.push(element.state);
-    nextStates.push(element.nextState);
-  });
+    dataset.forEach(element => {
+      states.push(element.state);
+      nextStates.push(element.nextState);
+    });
 
-  const currentQs = model.predict(tf.tensor2d(states)).arraySync();
-  const nextQs: any = model.predict(tf.tensor2d(nextStates)).arraySync();
+    const currentQs = model.predict(tf.tensor2d(states)).arraySync();
+    const nextQs: any = model.predict(tf.tensor2d(nextStates)).arraySync();
 
-  const x: any = [];
-  const y: any = [];
+    const x: any = [];
+    const y: any = [];
 
-  dataset.forEach((frame: Frame, index: number) => {
-    let newQ;
-    if (frame.reward === Reward.OBSTACLE) {
-      newQ = -100;
-    } else {
-      const maxFutureQ = Math.max(...nextQs[index]);
-      newQ = frame.reward + DISCOUNT * maxFutureQ;
+    dataset.forEach((frame: Frame, index: number) => {
+      let newQ;
+      let rewiretenReward;
+      if (frame.reward === Reward.TRASH) {
+        rewiretenReward = 5;
+      } else {
+        rewiretenReward = 1;
+      }
+      if (frame.reward === Reward.OBSTACLE) {
+        newQ = -5;
+      } else {
+        const maxFutureQ = Math.max(...nextQs[index]);
+        newQ = rewiretenReward + DISCOUNT * maxFutureQ;
+      }
+
+      const currentQ = currentQs[index];
+      currentQ[frame.action - 1] = newQ;
+      x.push(frame.state);
+      y.push(currentQ);
+    });
+
+    for (let i = 0; i < 1; i++) {
+      await model.fit(tf.tensor2d(x), tf.tensor2d(y), { verbose: true });
+      await model.predict(tf.tensor2d([verify.state])).print();
+      await model.predict(tf.tensor2d(verify2)).print();
     }
-
-    const currentQ = currentQs[index];
-    currentQ[frame.action - 1] = newQ;
-    x.push(frame.state);
-    y.push(currentQ);
-  });
-
-  for (let i = 0; i < 100; i++) {
-    await model.fit(tf.tensor2d(x), tf.tensor2d(y), { verbose: true });
-    await model.predict(tf.tensor2d([verify.state])).print();
-    await model.save('file://model.bin');
   }
+
+  await model.save('file://lowerrewards');
 };
 
 train();

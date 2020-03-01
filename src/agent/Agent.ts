@@ -72,11 +72,12 @@ export class Agent {
     }
     this.epsilon = this.epsilon * this.epsilonDecay;
     const rand = Math.random();
-    if (rand < this.epsilon && this.epsilonStrategy) {
-      return Action.random();
-    }
+    // if (rand < this.epsilon && this.epsilonStrategy) {
+    //   return Action.random();
+    // }
 
     const qs = this.predictModel.predict(tf.tensor2d([state])).dataSync();
+    console.table(qs);
 
     const highestReward = Object.keys(qs).reduce((a, b) => (qs[a] > qs[b] ? a : b));
 

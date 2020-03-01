@@ -15,6 +15,11 @@ export class TestModel {
     });
 
     const hidden3 = tf.layers.dense({
+      units: 256,
+      activation: 'relu'
+    });
+
+    const hidden4 = tf.layers.dense({
       activation: 'linear',
       units: 4
     });
@@ -23,6 +28,7 @@ export class TestModel {
     model.add(hidden1);
     model.add(hidden2);
     model.add(hidden3);
+    model.add(hidden4);
     model.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
     model.summary();
 

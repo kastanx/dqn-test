@@ -6,11 +6,13 @@ const render = process.env.NODEJS === 'node' ? false : true;
 let agent: any;
 
 const start = async () => {
-  agent = new Agent();
+  agent = new TrainedAgent();
+  await agent.init();
 
   while (true) {
     const state = game.getState();
     const action = await agent.predict(state);
+    console.log(action);
     const frame = game.step(action);
     agent.buffer.append(frame);
 
@@ -37,7 +39,7 @@ game.start();
 game.getState();
 game.createControls();
 
-let gameTimeout = 0;
+let gameTimeout = 300;
 
 if (render) {
   const dump = () => {

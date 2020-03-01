@@ -1,8 +1,8 @@
 import * as tensorflow from '@tensorflow/tfjs';
-import * as tfnode from '@tensorflow/tfjs-node';
+//import * as tfnode from '@tensorflow/tfjs-node';
 import { Sequential } from '@tensorflow/tfjs';
 
-export const tf = process.env.NODEJS === 'node' ? tfnode : tensorflow;
+export const tf = process.env.NODEJS === 'node' ? tensorflow : tensorflow;
 
 export class Model {
   static create = (): Sequential => {
