@@ -18,7 +18,8 @@
   "scripts": {
     "build": "webpack",
     "train": "npx ts-node src/testing/training.ts",
-    "run": "NODEJS=node npx ts-node src/app.ts "
+    "run": "NODEJS=node npx ts-node src/app.ts ",
+    "create-dataset": "NODEJS=node npx ts-node src/createDataset.ts "
   },
   "author": "",
   "license": "ISC",
