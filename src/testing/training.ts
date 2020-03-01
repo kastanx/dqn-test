@@ -5,7 +5,7 @@ import * as tf from '@tensorflow/tfjs-node';
 import { Reward } from '../game/Reward';
 
 const model: any = TestModel.create();
-const set: Frame[] = fs.readJSONSync('./src/testing/state-dataset.json'); //.slice(0, 100000);
+const set: Frame[] = fs.readJSONSync('dataset.json'); //.slice(0, 100000);
 const verify: Frame = fs.readJSONSync('./src/testing/verify.json');
 const verify2 = fs.readJSONSync('./src/testing/test.data.json');
 const buffer = new DequeBuffer(50000);
@@ -13,7 +13,7 @@ buffer.frames = set;
 
 const DISCOUNT = 0.999999;
 const train = async () => {
-  for (let k = 0; k < 1000; k++) {
+  for (let k = 0; k < 3000; k++) {
     let dataset = buffer.sample(1000);
     const states: any = [];
     const nextStates: any = [];
