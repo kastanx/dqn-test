@@ -11,6 +11,7 @@
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.15",
     "ts-loader": "^6.2.1",
+    "ts-node": "^8.6.2",
     "typescript": "^3.7.5",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11"
@@ -19,7 +20,8 @@
     "build": "webpack",
     "train": "npx ts-node src/testing/training.ts",
     "run": "NODEJS=node npx ts-node src/app.ts ",
-    "create-dataset": "NODEJS=node npx ts-node src/createDataset.ts "
+    "create-dataset": "NODEJS=node npx ts-node src/createDataset.ts ",
+    "cloud-train": "NODEJS=node node --max-old-space-size=8096 -- node_modules/.bin/ts-node -P tsconfig.json src/train.ts"
   },
   "author": "",
   "license": "ISC",

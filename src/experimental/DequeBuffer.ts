@@ -1,5 +1,4 @@
 import { sampleSize } from 'lodash';
-import * as fs from 'fs-extra';
 
 export interface Frame {
   state: number[];
@@ -29,8 +28,6 @@ export class DequeBuffer {
   public append = (frame: Frame) => {
     if (this.frames.length > this.maxSize) {
       this.frames.shift();
-      fs.writeJSONSync('dataset.json', this.frames);
-      process.exit();
     }
 
     this.frames.push(frame);
