@@ -22,7 +22,7 @@ const start = async () => {
   }
 };
 
-const game = new Game('canvas', 8, 8, render, true);
+const game = new Game('canvas', 8, 8, render, false);
 
 game.endGameCallback = () => {
   agent.score = 0;
