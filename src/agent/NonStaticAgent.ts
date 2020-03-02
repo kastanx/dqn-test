@@ -100,7 +100,7 @@ export class NonStaticAgent {
     this.toUpdate++;
     if (this.toUpdate > this.updateEvery) {
       this.predictModel.setWeights(this.trainModel.getWeights());
-      console.log('UPDATING MODEL');
+      console.log('UPDATING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
       this.toUpdate = 0;
     }
   };

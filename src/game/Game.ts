@@ -58,7 +58,7 @@ export class Game {
       this.trash = TrashFactory.createStatic(this.context, takenSpots);
     } else {
       this.obstacles = ObstacleFactory.create(5, this.gameWidth, this.gameHeight, this.context, takenSpots);
-      this.trash = TrashFactory.create(10, this.gameWidth, this.gameHeight, this.context, takenSpots);
+      this.trash = TrashFactory.create(5, this.gameWidth, this.gameHeight, this.context, takenSpots);
     }
 
     this.garbageMan = GarbageManFactory.create(1, this.gameWidth, this.gameHeight, this.context, takenSpots)[0];
