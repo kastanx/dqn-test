@@ -1,7 +1,7 @@
 import { Game } from './game/Game';
-import { StaticAgent } from './agent/StaticAgent';
+import { NonStaticAgent } from './agent/NonStaticAgent';
 
-const agent = new StaticAgent();
+const agent = new NonStaticAgent();
 const render = false;
 
 const start = async () => {
@@ -15,7 +15,7 @@ const start = async () => {
   }
 };
 
-const game = new Game('canvas', 8, 8, render, true);
+const game = new Game('canvas', 8, 8, render, false);
 
 game.endGameCallback = () => {
   agent.score = 0;

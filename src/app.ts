@@ -1,5 +1,4 @@
 import { Game } from './game/Game';
-import { Agent } from './agent/Agent';
 import { TrainedAgent } from './agent/TrainedAgent';
 
 const render = true;

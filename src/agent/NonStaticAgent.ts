@@ -2,8 +2,9 @@ import * as tf from '@tensorflow/tfjs-node';
 import { DequeBuffer, Frame } from '../experimental/DequeBuffer';
 import { Action } from '../game/Action';
 import { Reward } from '../game/Reward';
+import { Model } from './Model';
 
-export class TrainAgent {
+export class NonStaticAgent {
   private discount: number = 0.8;
   private trainModel: any;
   private predictModel: any;
@@ -21,13 +22,19 @@ export class TrainAgent {
   }
 
   init = async () => {
-    this.predictModel = await tf.loadLayersModel('file://static-pretrained/model.json');
-    this.trainModel = await tf.loadLayersModel('file://static-pretrained/model.json');
-    this.predictModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
-    this.trainModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
-    this.predictModel.summary();
-    this.trainModel.summary();
-    console.log('loaded');
+    try {
+      this.predictModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
+      this.trainModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
+      this.predictModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
+      this.trainModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
+      this.predictModel.summary();
+      this.trainModel.summary();
+      console.log('loaded');
+    } catch (e) {
+      this.predictModel = Model.create();
+      this.trainModel = Model.create();
+      console.log('model not found, created new');
+    }
   };
 
   train = async () => {
@@ -68,7 +75,7 @@ export class TrainAgent {
 
   saveModel = async () => {
     if (this.step % 10000 === 0) {
-      await this.trainModel.save('file://step' + this.step);
+      await this.trainModel.save('file://nonstatic-step' + this.step);
     }
   };
 
