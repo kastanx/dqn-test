@@ -22,7 +22,7 @@ export class TrainedAgent {
   }
 
   init = async () => {
-    this.predictModel = await tf.loadLayersModel('https://kastanx.github.io/dqn-test/lowerrewards/model.json');
+    this.predictModel = await tf.loadLayersModel('https://kastanx.github.io/dqn-test/static-pretrained/model.json');
     console.log('loaded');
   };
 

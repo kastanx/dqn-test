@@ -2,7 +2,7 @@ import { Game } from './game/Game';
 import { Agent } from './agent/Agent';
 import { TrainedAgent } from './agent/TrainedAgent';
 
-const render = process.env.NODEJS === 'node' ? false : true;
+const render = true;
 let agent: any;
 
 const start = async () => {
@@ -12,7 +12,6 @@ const start = async () => {
   while (true) {
     const state = game.getState();
     const action = await agent.predict(state);
-    console.log(action);
     const frame = game.step(action);
     agent.buffer.append(frame);
 
@@ -22,7 +21,7 @@ const start = async () => {
   }
 };
 
-const game = new Game('canvas', 8, 8, render, false);
+const game = new Game('canvas', 8, 8, render, true);
 
 game.endGameCallback = () => {
   agent.score = 0;
@@ -40,21 +39,5 @@ game.getState();
 game.createControls();
 
 let gameTimeout = 300;
-
-if (render) {
-  const dump = () => {
-    document.getElementById('dump').textContent = 'tbd';
-  };
-
-  document.getElementById('dumpbtn').onclick = dump;
-
-  const setGameTimeout = (to: any) => {
-    const { value } = document.getElementById('speedValue') as any;
-    agent.epsilonStrategy = false;
-    gameTimeout = parseInt(value);
-  };
-
-  document.getElementById('speedBtn').onclick = setGameTimeout;
-}
 
 start();

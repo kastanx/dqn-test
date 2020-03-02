@@ -21,8 +21,8 @@ export class TrainAgent {
   }
 
   init = async () => {
-    this.predictModel = await tf.loadLayersModel('file://lowerrewards/model.json');
-    this.trainModel = await tf.loadLayersModel('file://lowerrewards/model.json');
+    this.predictModel = await tf.loadLayersModel('file://static-pretrained/model.json');
+    this.trainModel = await tf.loadLayersModel('file://static-pretrained/model.json');
     this.predictModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
     this.trainModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
     this.predictModel.summary();
