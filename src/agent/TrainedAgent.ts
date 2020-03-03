@@ -14,12 +14,15 @@ export class TrainedAgent {
   public updateEvery: number = 100;
   public toUpdate: number = 0;
 
-  constructor() {
+  public model: string;
+
+  constructor(model: string) {
+    this.model = model;
     this.buffer = new DequeBuffer(50000);
   }
 
   init = async () => {
-    this.predictModel = await tf.loadLayersModel('https://kastanx.github.io/dqn-test/nonstatic-pretrained/model.json');
+    this.predictModel = await tf.loadLayersModel('https://kastanx.github.io/dqn-test/' + this.model + '/model.json');
     console.log('loaded');
   };
 
