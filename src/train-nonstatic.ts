@@ -1,11 +1,15 @@
 import { Game } from './game/Game';
 import { NonStaticAgent } from './agent/NonStaticAgent';
 
+const model = process.env.MODEL;
+const epsilon = process.env.EPS;
+
 const agent = new NonStaticAgent();
+agent.epsilon = parseInt(epsilon);
 const render = false;
 
 const start = async () => {
-  await agent.init();
+  await agent.init(model);
 
   while (true) {
     const state = game.getState();

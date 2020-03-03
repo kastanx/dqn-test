@@ -21,7 +21,7 @@
     "train": "npx ts-node src/testing/training.ts",
     "run": "NODEJS=node npx ts-node src/app.ts ",
     "cloud-train-static": "NODEJS=node node --max-old-space-size=8096 -- node_modules/.bin/ts-node -P tsconfig.json src/train.ts",
-    "cloud-train-nonstatic": "NODEJS=node node --max-old-space-size=8096 -- node_modules/.bin/ts-node -P tsconfig.json src/train-nonstatic.ts"
+    "cloud-train-nonstatic": "NODEJS=node node --max-old-space-size=8096 -- node_modules/.bin/ts-node -P tsconfig.json src/train-nonstatic.ts $MODEL $EPS"
   },
   "author": "",
   "license": "ISC",

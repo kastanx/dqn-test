@@ -18,13 +18,13 @@ export class NonStaticAgent {
   public step: number = 0;
 
   constructor() {
-    this.buffer = new DequeBuffer(50000);
+    this.buffer = new DequeBuffer(10000);
   }
 
-  init = async () => {
+  init = async (modelPath: string = 'nonstatic-pretrained') => {
     try {
-      this.predictModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
-      this.trainModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
+      this.predictModel = await tf.loadLayersModel('file://' + modelPath + '/model.json');
+      this.trainModel = await tf.loadLayersModel('file://' + modelPath + '/model.json');
       this.predictModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
       this.trainModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
       this.predictModel.summary();
@@ -38,8 +38,8 @@ export class NonStaticAgent {
   };
 
   train = async () => {
-    if (this.buffer.canTrain(32)) {
-      const batch = this.buffer.sample(32);
+    if (this.buffer.canTrain(64)) {
+      const batch = this.buffer.sample(64);
       const states: any = [];
       const nextStates: any = [];
       batch.forEach(element => {
