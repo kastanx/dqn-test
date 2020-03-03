@@ -5,7 +5,7 @@ const model = process.env.MODEL;
 const epsilon = process.env.EPS;
 
 const agent = new NonStaticAgent();
-agent.epsilon = parseInt(epsilon);
+agent.epsilon = parseFloat(epsilon);
 const render = false;
 
 const start = async () => {
