@@ -1,7 +1,5 @@
-import { Sequential, tensor2d } from '@tensorflow/tfjs';
-import { Model, tf } from './Model';
+import * as tf from '@tensorflow/tfjs';
 import { DequeBuffer, Frame } from '../experimental/DequeBuffer';
-import { Action } from '../game/Action';
 
 export class TrainedAgent {
   private discount: number = 0.9;
@@ -17,12 +15,11 @@ export class TrainedAgent {
   public toUpdate: number = 0;
 
   constructor() {
-    this.trainModel = Model.create();
     this.buffer = new DequeBuffer(50000);
   }
 
   init = async () => {
-    this.predictModel = await tf.loadLayersModel('https://kastanx.github.io/dqn-test/static-pretrained/model.json');
+    this.predictModel = await tf.loadLayersModel('https://kastanx.github.io/dqn-test/nonstatic-pretrained/model.json');
     console.log('loaded');
   };
 
