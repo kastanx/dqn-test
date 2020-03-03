@@ -5,7 +5,7 @@ import { Reward } from '../game/Reward';
 import { Model } from './Model';
 
 export class NonStaticAgent {
-  private discount: number = 0.8;
+  private discount: number = 0.5;
   private trainModel: any;
   private predictModel: any;
   public buffer: DequeBuffer;
@@ -38,8 +38,8 @@ export class NonStaticAgent {
   };
 
   train = async () => {
-    if (this.buffer.canTrain(64)) {
-      const batch = this.buffer.sample(64);
+    if (this.buffer.canTrain(32)) {
+      const batch = this.buffer.sample(32);
       const states: any = [];
       const nextStates: any = [];
       batch.forEach(element => {
@@ -47,8 +47,13 @@ export class NonStaticAgent {
         nextStates.push(element.nextState);
       });
 
-      const currentQs = this.trainModel.predict(tf.tensor2d(states)).arraySync();
-      const nextQs: any = this.trainModel.predict(tf.tensor2d(nextStates)).arraySync();
+      const currentQs = tf.tidy(() => {
+        return this.trainModel.predict(tf.tensor2d(states)).arraySync();
+      });
+
+      const nextQs: any = tf.tidy(() => {
+        return this.trainModel.predict(tf.tensor2d(nextStates)).arraySync();
+      });
 
       const x: any = [];
       const y: any = [];
@@ -67,9 +72,15 @@ export class NonStaticAgent {
         y.push(currentQ);
       });
 
-      await this.trainModel.fit(tf.tensor2d(x), tf.tensor2d(y), { verbose: false });
+      const xTensor = tf.tensor2d(x);
+      const yTensor = tf.tensor2d(y);
+
+      await this.trainModel.fit(xTensor, yTensor, { verbose: false });
       await this.saveModel();
       this.updateModel();
+
+      tf.dispose(yTensor);
+      tf.dispose(xTensor);
     }
   };
 
@@ -89,11 +100,13 @@ export class NonStaticAgent {
       return Action.random();
     }
 
-    const qs = this.predictModel.predict(tf.tensor2d([state])).dataSync();
+    return tf.tidy(() => {
+      const qs = this.predictModel.predict(tf.tensor2d([state])).dataSync();
 
-    const highestReward = Object.keys(qs).reduce((a, b) => (qs[a] > qs[b] ? a : b));
+      const highestReward = Object.keys(qs).reduce((a, b) => (qs[a] > qs[b] ? a : b));
 
-    return parseInt(highestReward) + 1;
+      return parseInt(highestReward) + 1;
+    });
   };
 
   updateModel = () => {

@@ -2,10 +2,8 @@ import { Game } from './game/Game';
 import { NonStaticAgent } from './agent/NonStaticAgent';
 
 const model = process.env.MODEL;
-const epsilon = process.env.EPS;
 
 const agent = new NonStaticAgent();
-agent.epsilon = parseFloat(epsilon);
 const render = false;
 
 const start = async () => {
