@@ -5,7 +5,7 @@ import { Reward } from '../game/Reward';
 import { StaticModel } from './StaticModel';
 
 export class StaticAgent {
-  private discount: number = 0.9999;
+  private discount: number = 0.999999;
   private trainModel: any;
   private predictModel: any;
   public buffer: DequeBuffer;

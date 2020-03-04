@@ -18,7 +18,7 @@ export class NonStaticAgent {
   public step: number = 0;
 
   constructor() {
-    this.buffer = new DequeBuffer(10000);
+    this.buffer = new DequeBuffer(100000);
   }
 
   init = async (modelPath: string = 'nonstatic-pretrained') => {
@@ -38,8 +38,8 @@ export class NonStaticAgent {
   };
 
   train = async () => {
-    if (this.buffer.canTrain(32)) {
-      const batch = this.buffer.sample(32);
+    if (this.buffer.canTrain(64)) {
+      const batch = this.buffer.sample(64);
       const states: any = [];
       const nextStates: any = [];
       batch.forEach(element => {
