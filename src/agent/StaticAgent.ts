@@ -2,9 +2,10 @@ import * as tf from '@tensorflow/tfjs-node';
 import { DequeBuffer, Frame } from '../experimental/DequeBuffer';
 import { Action } from '../game/Action';
 import { Reward } from '../game/Reward';
+import { StaticModel } from './StaticModel';
 
 export class StaticAgent {
-  private discount: number = 0.8;
+  private discount: number = 0.9999;
   private trainModel: any;
   private predictModel: any;
   public buffer: DequeBuffer;
@@ -20,14 +21,19 @@ export class StaticAgent {
     this.buffer = new DequeBuffer(50000);
   }
 
-  init = async () => {
-    this.predictModel = await tf.loadLayersModel('file://static-pretrained/model.json');
-    this.trainModel = await tf.loadLayersModel('file://static-pretrained/model.json');
-    this.predictModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
-    this.trainModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
-    this.predictModel.summary();
-    this.trainModel.summary();
-    console.log('loaded');
+  init = async (loadPretrained: boolean = false) => {
+    if (loadPretrained) {
+      this.predictModel = await tf.loadLayersModel('file://static-pretrained/model.json');
+      this.trainModel = await tf.loadLayersModel('file://static-pretrained/model.json');
+      this.predictModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
+      this.trainModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
+      this.predictModel.summary();
+      this.trainModel.summary();
+      console.log('loaded');
+    } else {
+      this.predictModel = StaticModel.create();
+      this.trainModel = StaticModel.create();
+    }
   };
 
   train = async () => {
@@ -40,8 +46,13 @@ export class StaticAgent {
         nextStates.push(element.nextState);
       });
 
-      const currentQs = this.trainModel.predict(tf.tensor2d(states)).arraySync();
-      const nextQs: any = this.trainModel.predict(tf.tensor2d(nextStates)).arraySync();
+      const currentQs = tf.tidy(() => {
+        return this.trainModel.predict(tf.tensor2d(states)).arraySync();
+      });
+
+      const nextQs: any = tf.tidy(() => {
+        return this.trainModel.predict(tf.tensor2d(nextStates)).arraySync();
+      });
 
       const x: any = [];
       const y: any = [];
@@ -60,15 +71,21 @@ export class StaticAgent {
         y.push(currentQ);
       });
 
-      await this.trainModel.fit(tf.tensor2d(x), tf.tensor2d(y), { verbose: false });
+      const xTensor = tf.tensor2d(x);
+      const yTensor = tf.tensor2d(y);
+
+      await this.trainModel.fit(xTensor, yTensor, { verbose: false });
       await this.saveModel();
       this.updateModel();
+
+      tf.dispose(yTensor);
+      tf.dispose(xTensor);
     }
   };
 
   saveModel = async () => {
     if (this.step % 10000 === 0) {
-      await this.trainModel.save('file://step' + this.step);
+      await this.trainModel.save('file://static-step' + this.step);
     }
   };
 
@@ -82,18 +99,20 @@ export class StaticAgent {
       return Action.random();
     }
 
-    const qs = this.predictModel.predict(tf.tensor2d([state])).dataSync();
+    return tf.tidy(() => {
+      const qs = this.predictModel.predict(tf.tensor2d([state])).dataSync();
 
-    const highestReward = Object.keys(qs).reduce((a, b) => (qs[a] > qs[b] ? a : b));
+      const highestReward = Object.keys(qs).reduce((a, b) => (qs[a] > qs[b] ? a : b));
 
-    return parseInt(highestReward) + 1;
+      return parseInt(highestReward) + 1;
+    });
   };
 
   updateModel = () => {
     this.toUpdate++;
     if (this.toUpdate > this.updateEvery) {
       this.predictModel.setWeights(this.trainModel.getWeights());
-      console.log('UPDATING MODEL');
+      console.log('UPDATING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
       this.toUpdate = 0;
     }
   };
