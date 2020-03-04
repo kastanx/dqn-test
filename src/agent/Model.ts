@@ -27,6 +27,18 @@ export class Model {
         activation: 'relu'
       })
     );
+    model.add(
+      tf.layers.dense({
+        units: 256,
+        activation: 'relu'
+      })
+    );
+    model.add(
+      tf.layers.dense({
+        units: 256,
+        activation: 'relu'
+      })
+    );
 
     model.add(
       tf.layers.dense({
