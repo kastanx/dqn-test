@@ -5,20 +5,20 @@ import { Reward } from '../game/Reward';
 import { StaticModel } from './StaticModel';
 
 export class StaticAgent {
-  private discount: number = 0.8;
+  private discount: number = 0.99;
   private trainModel: any;
   private predictModel: any;
   public buffer: DequeBuffer;
   public training: boolean = false;
-  public epsilon: number = 0.8;
-  public epsilonDecay: number = 0.99999;
+  public epsilon: number = 1;
+  public epsilonDecay: number = 0.99975;
   public score: number = 0;
   public updateEvery: number = 1000;
   public toUpdate: number = 0;
   public step: number = 0;
 
   constructor() {
-    this.buffer = new DequeBuffer(500000);
+    this.buffer = new DequeBuffer(50000);
   }
 
   init = async (loadPretrained: boolean = false) => {
@@ -37,8 +37,8 @@ export class StaticAgent {
   };
 
   train = async () => {
-    if (this.buffer.canTrain(500)) {
-      const batch = this.buffer.sample(500);
+    if (this.buffer.canTrain(64)) {
+      const batch = this.buffer.sample(64);
       const states: any = [];
       const nextStates: any = [];
       batch.forEach(element => {
