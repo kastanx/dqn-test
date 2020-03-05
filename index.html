@@ -10,9 +10,17 @@
     </style>
   </head>
 
-  <body>
-    <canvas id="canvas-static"></canvas>
-    <canvas id="canvas-nonstatic"></canvas>
+  <body style="display:flex;">
+    <div style="display: flex;flex-direction:column;">
+      <canvas id="canvas-static"></canvas>
+      <input id="static-model" />
+      <button id="static-model-button">Load Model</button>
+    </div>
+    <div style="display: flex;flex-direction:column;">
+      <canvas id="canvas-nonstatic"></canvas>
+      <input id="nonstatic-model" />
+      <button id="nonstatic-model-button">Load Model</button>
+    </div>
     <script src="dist/bundle.js"></script>
   </body>
 </html>

@@ -4,8 +4,8 @@ import { TrainedAgent } from './agent/TrainedAgent';
 const render = true;
 let agent: any;
 
-const start = async () => {
-  agent = new TrainedAgent('static-pretrained');
+const start = async (modelUrl: string = 'static-pretrained') => {
+  agent = new TrainedAgent(modelUrl);
   await agent.init();
 
   while (true) {
@@ -38,5 +38,10 @@ game.getState();
 game.createControls();
 
 let gameTimeout = 300;
+
+document.getElementById('nonstatic-model-button').onclick = () => {
+  const model: any = document.getElementById('nonstatic-model');
+  start(model);
+};
 
 start();
