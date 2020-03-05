@@ -37,6 +37,7 @@ let gameTimeout = 300;
 
 document.getElementById('static-model-button').onclick = () => {
   const model: any = document.getElementById('static-model');
+  game.start();
   start(model.value);
 };
 
