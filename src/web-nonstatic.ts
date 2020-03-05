@@ -14,9 +14,7 @@ const start = async (modelUrl: string = 'nonstatic-pretrained') => {
     const frame = game.step(action);
     agent.buffer.append(frame);
 
-    if (gameTimeout !== 0) {
-      await new Promise((resolve, reject) => setTimeout(resolve, gameTimeout));
-    }
+    await new Promise((resolve, reject) => setTimeout(resolve, 300));
   }
 };
 
