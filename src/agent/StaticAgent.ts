@@ -3,22 +3,26 @@ import { DequeBuffer, Frame } from '../experimental/DequeBuffer';
 import { Action } from '../game/Action';
 import { Reward } from '../game/Reward';
 import { StaticModel } from './StaticModel';
+import * as fs from 'fs-extra';
 
 export class StaticAgent {
-  private discount: number = 0.99;
+  private discount: number = 0.8;
   private trainModel: any;
   private predictModel: any;
   public buffer: DequeBuffer;
   public training: boolean = false;
-  public epsilon: number = 1;
-  public epsilonDecay: number = 0.99975;
+  public epsilon: number = 0.9;
+  public epsilonDecay: number = 0.99998875;
   public score: number = 0;
-  public updateEvery: number = 1000;
+  public updateEvery: number = 100;
   public toUpdate: number = 0;
   public step: number = 0;
+  public verify: any;
 
   constructor() {
-    this.buffer = new DequeBuffer(50000);
+    this.buffer = new DequeBuffer(300000);
+
+    this.verify = tf.tensor2d(fs.readJSONSync('./src/testing/test.data.json'));
   }
 
   init = async (loadPretrained: boolean = false) => {
@@ -37,8 +41,8 @@ export class StaticAgent {
   };
 
   train = async () => {
-    if (this.buffer.canTrain(64)) {
-      const batch = this.buffer.sample(64);
+    if (this.buffer.canTrain(250000)) {
+      const batch = this.buffer.sample(100);
       const states: any = [];
       const nextStates: any = [];
       batch.forEach(element => {
@@ -80,20 +84,23 @@ export class StaticAgent {
 
       tf.dispose(yTensor);
       tf.dispose(xTensor);
+
+      this.epsilon = this.epsilon * this.epsilonDecay;
+
+      this.testPredict();
     }
   };
 
   saveModel = async () => {
-    if (this.step % 10000 === 0) {
+    if (this.step % 1000 === 0) {
       await this.trainModel.save('file://pretrained/static/step' + this.step);
+      console.log('SAVING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
     }
   };
 
   predict = async (state: any): Promise<any> => {
     this.step++;
     await this.train();
-
-    this.epsilon = this.epsilon * this.epsilonDecay;
 
     if (Math.random() < this.epsilon) {
       return Action.random();
@@ -115,5 +122,13 @@ export class StaticAgent {
       console.log('UPDATING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
       this.toUpdate = 0;
     }
+  };
+
+  testPredict = () => {
+    tf.tidy(() => {
+      this.trainModel.predict(this.verify).print();
+    });
+    console.log('EPSILON: ' + this.epsilon);
+    console.log('3, 1, 4');
   };
 }

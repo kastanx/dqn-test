@@ -1,5 +1,5 @@
 export enum Reward {
-  WALK = 1,
-  TRASH = 5,
-  OBSTACLE = -5
+  WALK = 0,
+  TRASH = 0.05,
+  OBSTACLE = -0.05
 }

@@ -31,6 +31,19 @@ export class StaticModel {
 
     model.add(
       tf.layers.dense({
+        units: 256,
+        activation: 'relu'
+      })
+    );
+
+    model.add(
+      tf.layers.dense({
+        units: 256,
+        activation: 'relu'
+      })
+    );
+    model.add(
+      tf.layers.dense({
         activation: 'linear',
         units: 4
       })
