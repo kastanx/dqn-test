@@ -5,20 +5,20 @@ import { Reward } from '../game/Reward';
 import { Model } from './Model';
 
 export class NonStaticAgent {
-  private discount: number = 0.5;
+  private discount: number = 0.8;
   private trainModel: any;
   private predictModel: any;
   public buffer: DequeBuffer;
   public training: boolean = false;
-  public epsilon: number = 0.4;
-  public epsilonDecay: number = 0.999999;
+  public epsilon: number = 0.8;
+  public epsilonDecay: number = 0.99999;
   public score: number = 0;
   public updateEvery: number = 1000;
   public toUpdate: number = 0;
   public step: number = 0;
 
   constructor() {
-    this.buffer = new DequeBuffer(200000);
+    this.buffer = new DequeBuffer(500000);
   }
 
   init = async (modelPath: string = 'nonstatic-pretrained') => {
@@ -38,8 +38,8 @@ export class NonStaticAgent {
   };
 
   train = async () => {
-    if (this.buffer.canTrain(64)) {
-      const batch = this.buffer.sample(64);
+    if (this.buffer.canTrain(500)) {
+      const batch = this.buffer.sample(500);
       const states: any = [];
       const nextStates: any = [];
       batch.forEach(element => {
@@ -86,7 +86,7 @@ export class NonStaticAgent {
 
   saveModel = async () => {
     if (this.step % 10000 === 0) {
-      await this.trainModel.save('file://nonstatic-step' + this.step);
+      await this.trainModel.save('file://pretrained/nonstatis/step' + this.step);
     }
   };
 

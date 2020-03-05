@@ -32,8 +32,6 @@ game.successCallback = (object1: any, object2: any) => {
 };
 
 game.start();
-game.getState();
-game.createControls();
 
 let gameTimeout = 300;
 
