@@ -37,6 +37,7 @@ let gameTimeout = 300;
 
 document.getElementById('nonstatic-model-button').onclick = () => {
   const model: any = document.getElementById('nonstatic-model');
+  game.start();
   start(model.value);
 };
 
