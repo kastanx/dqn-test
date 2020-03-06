@@ -7,7 +7,7 @@ const agent = new NonStaticAgent();
 const render = false;
 
 const start = async () => {
-  await agent.init(model);
+  await agent.init();
 
   while (true) {
     const state = game.getState();

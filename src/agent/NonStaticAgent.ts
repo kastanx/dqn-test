@@ -2,7 +2,8 @@ import * as tf from '@tensorflow/tfjs-node';
 import { DequeBuffer, Frame } from '../experimental/DequeBuffer';
 import { Action } from '../game/Action';
 import { Reward } from '../game/Reward';
-import { Model } from './Model';
+import { StaticModel } from './StaticModel';
+import * as fs from 'fs-extra';
 
 export class NonStaticAgent {
   private discount: number = 0.8;
@@ -10,36 +11,38 @@ export class NonStaticAgent {
   private predictModel: any;
   public buffer: DequeBuffer;
   public training: boolean = false;
-  public epsilon: number = 0.8;
-  public epsilonDecay: number = 0.99999;
+  public epsilon: number = 0.9;
+  public epsilonDecay: number = 0.99999875;
   public score: number = 0;
-  public updateEvery: number = 1000;
+  public updateEvery: number = 100;
   public toUpdate: number = 0;
   public step: number = 0;
+  public verify: any;
 
   constructor() {
     this.buffer = new DequeBuffer(500000);
+
+    this.verify = tf.tensor2d(fs.readJSONSync('./src/testing/test.data.json'));
   }
 
-  init = async (modelPath: string = 'nonstatic-pretrained') => {
-    try {
-      this.predictModel = await tf.loadLayersModel('file://' + modelPath + '/model.json');
-      this.trainModel = await tf.loadLayersModel('file://' + modelPath + '/model.json');
+  init = async (loadPretrained: boolean = false) => {
+    if (loadPretrained) {
+      this.predictModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
+      this.trainModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
       this.predictModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
       this.trainModel.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
       this.predictModel.summary();
       this.trainModel.summary();
       console.log('loaded');
-    } catch (e) {
-      this.predictModel = Model.create();
-      this.trainModel = Model.create();
-      console.log('model not found, created new');
+    } else {
+      this.predictModel = StaticModel.create();
+      this.trainModel = StaticModel.create();
     }
   };
 
   train = async () => {
-    if (this.buffer.canTrain(500)) {
-      const batch = this.buffer.sample(500);
+    if (this.buffer.canTrain(250000)) {
+      const batch = this.buffer.sample(100);
       const states: any = [];
       const nextStates: any = [];
       batch.forEach(element => {
@@ -81,20 +84,21 @@ export class NonStaticAgent {
 
       tf.dispose(yTensor);
       tf.dispose(xTensor);
+
+      this.epsilon = this.epsilon * this.epsilonDecay;
     }
   };
 
   saveModel = async () => {
     if (this.step % 10000 === 0) {
-      await this.trainModel.save('file://pretrained/nonstatis/step' + this.step);
+      await this.trainModel.save('file://pretrained/nonstatic/step' + this.step);
+      console.log('SAVING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
     }
   };
 
   predict = async (state: any): Promise<any> => {
     this.step++;
     await this.train();
-
-    this.epsilon = this.epsilon * this.epsilonDecay;
 
     if (Math.random() < this.epsilon) {
       return Action.random();
@@ -116,5 +120,13 @@ export class NonStaticAgent {
       console.log('UPDATING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
       this.toUpdate = 0;
     }
+  };
+
+  testPredict = () => {
+    tf.tidy(() => {
+      this.trainModel.predict(this.verify).print();
+    });
+    console.log('EPSILON: ' + this.epsilon);
+    console.log('3, 1, 4');
   };
 }
