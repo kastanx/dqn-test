@@ -2,7 +2,6 @@ import * as tf from '@tensorflow/tfjs-node';
 import { DequeBuffer, Frame } from '../experimental/DequeBuffer';
 import { Action } from '../game/Action';
 import { Reward } from '../game/Reward';
-import { StaticModel } from './StaticModel';
 import * as fs from 'fs-extra';
 
 export class NonStaticAgent {
@@ -25,7 +24,7 @@ export class NonStaticAgent {
     this.verify = tf.tensor2d(fs.readJSONSync('./src/testing/test.data.json'));
   }
 
-  init = async (loadPretrained: boolean = false) => {
+  init = async (loadPretrained: boolean = false, modelToUse: any) => {
     if (loadPretrained) {
       this.predictModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
       this.trainModel = await tf.loadLayersModel('file://nonstatic-pretrained/model.json');
@@ -35,8 +34,8 @@ export class NonStaticAgent {
       this.trainModel.summary();
       console.log('loaded');
     } else {
-      this.predictModel = StaticModel.create();
-      this.trainModel = StaticModel.create();
+      this.predictModel = modelToUse.create();
+      this.trainModel = modelToUse.create();
     }
   };
 

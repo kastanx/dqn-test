@@ -5,7 +5,7 @@ import * as tf from '@tensorflow/tfjs-node';
 import { Reward } from '../game/Reward';
 
 const model: any = TestModel.create();
-const set: Frame[] = fs.readJSONSync('dataset.json'); //.slice(0, 100000);
+const set: Frame[] = fs.readJSONSync('./src/testing/state-dataset.json'); //.slice(0, 100000);
 const verify: Frame = fs.readJSONSync('./src/testing/verify.json');
 const verify2 = fs.readJSONSync('./src/testing/test.data.json');
 const buffer = new DequeBuffer(50000);
@@ -14,7 +14,7 @@ buffer.frames = set;
 const DISCOUNT = 0.999999;
 const train = async () => {
   for (let k = 0; k < 3000; k++) {
-    let dataset = buffer.sample(1000);
+    let dataset = buffer.sample(32);
     const states: any = [];
     const nextStates: any = [];
 
@@ -32,12 +32,12 @@ const train = async () => {
     dataset.forEach((frame: Frame, index: number) => {
       let newQ;
       let rewiretenReward;
-      if (frame.reward === Reward.TRASH) {
+      if (frame.reward === 100) {
         rewiretenReward = 5;
       } else {
         rewiretenReward = 1;
       }
-      if (frame.reward === Reward.OBSTACLE) {
+      if (frame.reward === -250) {
         newQ = -5;
       } else {
         const maxFutureQ = Math.max(...nextQs[index]);

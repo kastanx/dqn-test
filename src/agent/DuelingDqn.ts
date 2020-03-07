@@ -1,8 +1,7 @@
 import * as tf from '@tensorflow/tfjs-node';
-import { Sequential } from '@tensorflow/tfjs';
 import { AggregateLayer } from '../AggregateLayer';
 
-export class TestModel {
+export class DuelingDqn {
   static create = (): any => {
     const input = tf.input({ shape: [64] });
 
@@ -21,6 +20,7 @@ export class TestModel {
     //@ts-ignore
     const model = tf.model({ inputs: input, outputs: aggregate });
     model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+    model.summary();
 
     return model;
   };
