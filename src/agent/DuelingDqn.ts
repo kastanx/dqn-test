@@ -18,7 +18,7 @@ export class DuelingDqn {
     //@ts-ignore
     const aggregate = new AggregateLayer({ units: 4 }).apply([A, V]);
     //@ts-ignore
-    const model = tf.model({ inputs: input, outputs: aggregate });
+    const model = tf.model({ inputs: input, outputs: aggregate, name: 'dueling' });
     model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
     model.summary();
 

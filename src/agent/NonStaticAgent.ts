@@ -90,7 +90,7 @@ export class NonStaticAgent {
 
   saveModel = async () => {
     if (this.step % 10000 === 0) {
-      await this.trainModel.save('file://pretrained/nonstatic/step' + this.step);
+      await this.trainModel.save('file://pretrained/nonstatic/step' + this.step + '-' + this.trainModel.name);
       console.log('SAVING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
     }
   };

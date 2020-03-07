@@ -5,7 +5,7 @@ export const tf = tensorflow;
 
 export class Model {
   static create = (): Sequential => {
-    const model = tf.sequential();
+    const model = tf.sequential({ name: 'dqn' });
 
     model.add(
       tf.layers.dense({
