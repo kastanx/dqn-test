@@ -117,6 +117,7 @@ export class NonStaticAgent {
     if (this.toUpdate > this.updateEvery) {
       this.predictModel.setWeights(this.trainModel.getWeights());
       console.log('UPDATING MODEL, EPSILON: ' + this.epsilon + ' STEP: ' + this.step);
+      console.log(tf.memory());
       this.toUpdate = 0;
     }
   };
